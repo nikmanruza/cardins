@@ -160,7 +160,7 @@ export const adminListProducts = createServerFn({ method: "GET" })
     const [{ data: products, error }, { data: keys }, { data: categories }] = await Promise.all([
       supabaseAdmin
         .from("products")
-        .select("id, name, slug, price, sale_price, currency, stock_status, category_id, product_type, platform")
+        .select("id, name, slug, price, sale_price, currency, stock_status, category_id, product_type, platform, image_key")
         .order("name"),
       supabaseAdmin.from("inventory_items").select("product_id, status"),
       supabaseAdmin.from("categories").select("id, name").order("sort_order"),
@@ -289,4 +289,251 @@ export const adminListAudit = createServerFn({ method: "GET" })
       .limit(50);
     if (error) throw new Error(error.message);
     return data ?? [];
+  });
+
+/** Anyone with the store access code can be granted the admin seat. */
+export const unlockAdminWithCode = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: { code: string }) => ({ code: String(data.code ?? "").trim() }))
+  .handler(async ({ data, context }) => {
+    const expected = process.env["ADMIN_ACCESS_CODE"];
+    if (!expected) throw new Error("The store access code is not configured yet.");
+    if (data.code.length === 0) throw new Error("Enter the admin access code.");
+    const { createHash, timingSafeEqual } = await import("node:crypto");
+    const a = createHash("sha256").update(data.code, "utf8").digest();
+    const b = createHash("sha256").update(expected, "utf8").digest();
+    if (!timingSafeEqual(a, b)) throw new Error("That access code is incorrect.");
+
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: existing } = await supabaseAdmin
+      .from("user_roles")
+      .select("id")
+      .eq("user_id", context.userId)
+      .eq("role", "admin")
+      .maybeSingle();
+
+    if (!existing) {
+      const { error } = await supabaseAdmin
+        .from("user_roles")
+        .insert({ user_id: context.userId, role: "admin" });
+      if (error) throw new Error(error.message);
+      await supabaseAdmin.from("audit_logs").insert({
+        actor_id: context.userId,
+        action: "role.admin_unlocked_with_code",
+        entity: "user_roles",
+        entity_id: context.userId,
+        metadata: {},
+      });
+    }
+    return { ok: true };
+  });
+
+export type ProductDraft = {
+  name: string;
+  slug: string;
+  categoryId: string;
+  productType: "GAME_ACCOUNT" | "GAME_CARD" | "GIFT_CARD" | "DIGITAL_PRODUCT";
+  shortDescription: string;
+  description: string;
+  price: number;
+  salePrice: number | null;
+  currency: string;
+  platform: string;
+  game: string;
+  region: string;
+  deliveryMethod: string;
+  stockStatus: "IN_STOCK" | "LOW_STOCK" | "OUT_OF_STOCK" | "PREORDER";
+  imageKey: string;
+  redemptionInstructions: string;
+  terms: string;
+  isFeatured: boolean;
+  isBestseller: boolean;
+  isNew: boolean;
+};
+
+function slugify(value: string) {
+  return value
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 80);
+}
+
+function normalizeDraft(data: ProductDraft) {
+  const name = String(data.name ?? "").trim().slice(0, 160);
+  if (!name) throw new Error("A product name is required.");
+  return {
+    name,
+    slug: slugify(data.slug || name) || slugify(name),
+    category_id: String(data.categoryId ?? ""),
+    product_type: data.productType,
+    short_description: String(data.shortDescription ?? "").slice(0, 400),
+    description: String(data.description ?? "").slice(0, 8000),
+    price: Math.max(0, Number(data.price) || 0),
+    sale_price:
+      data.salePrice === null || data.salePrice === undefined || Number.isNaN(Number(data.salePrice))
+        ? null
+        : Math.max(0, Number(data.salePrice)),
+    currency: (String(data.currency ?? "USD") || "USD").toUpperCase().slice(0, 3),
+    platform: String(data.platform ?? "").trim() || null,
+    game: String(data.game ?? "").trim() || null,
+    region: String(data.region ?? "").trim() || null,
+    delivery_method: String(data.deliveryMethod ?? "").trim() || "Instant digital delivery",
+    stock_status: data.stockStatus,
+    image_key: String(data.imageKey ?? "digital"),
+    redemption_instructions: String(data.redemptionInstructions ?? "").trim() || null,
+    terms: String(data.terms ?? "").trim() || null,
+    is_featured: Boolean(data.isFeatured),
+    is_bestseller: Boolean(data.isBestseller),
+    is_new: Boolean(data.isNew),
+  };
+}
+
+export const adminGetProduct = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: { productId: string }) => ({ productId: String(data.productId) }))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: row, error } = await supabaseAdmin
+      .from("products")
+      .select("*")
+      .eq("id", data.productId)
+      .maybeSingle();
+    if (error) throw new Error(error.message);
+    if (!row) throw new Error("That product no longer exists.");
+    return { ...row, price: Number(row.price), sale_price: row.sale_price === null ? null : Number(row.sale_price) };
+  });
+
+export const adminCreateProduct = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: ProductDraft) => data)
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context);
+    const row = normalizeDraft(data);
+    if (!row.category_id) throw new Error("Choose a category for this product.");
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: created, error } = await supabaseAdmin
+      .from("products")
+      .insert(row)
+      .select("id")
+      .single();
+    if (error) throw new Error(error.message);
+
+    await supabaseAdmin.from("audit_logs").insert({
+      actor_id: context.userId,
+      action: "product.created",
+      entity: "products",
+      entity_id: created.id,
+      metadata: { name: row.name },
+    });
+    return { id: created.id, slug: row.slug };
+  });
+
+export const adminSaveProduct = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: ProductDraft & { productId: string }) => data)
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context);
+    const row = normalizeDraft(data);
+    if (!row.category_id) throw new Error("Choose a category for this product.");
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin
+      .from("products")
+      .update(row)
+      .eq("id", String(data.productId));
+    if (error) throw new Error(error.message);
+
+    await supabaseAdmin.from("audit_logs").insert({
+      actor_id: context.userId,
+      action: "product.saved",
+      entity: "products",
+      entity_id: String(data.productId),
+      metadata: { name: row.name },
+    });
+    return { ok: true };
+  });
+
+export const adminDeleteProduct = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: { productId: string }) => ({ productId: String(data.productId) }))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { count } = await supabaseAdmin
+      .from("order_items")
+      .select("id", { count: "exact", head: true })
+      .eq("product_id", data.productId);
+    if ((count ?? 0) > 0) {
+      throw new Error("This product has already been ordered, so it can't be deleted. Set it to out of stock instead.");
+    }
+    await supabaseAdmin.from("wishlist_items").delete().eq("product_id", data.productId);
+    await supabaseAdmin.from("inventory_items").delete().eq("product_id", data.productId);
+    const { error } = await supabaseAdmin.from("products").delete().eq("id", data.productId);
+    if (error) throw new Error(error.message);
+
+    await supabaseAdmin.from("audit_logs").insert({
+      actor_id: context.userId,
+      action: "product.deleted",
+      entity: "products",
+      entity_id: data.productId,
+      metadata: {},
+    });
+    return { ok: true };
+  });
+
+export const adminListCategories = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await assertAdmin(context);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data, error } = await supabaseAdmin
+      .from("categories")
+      .select("id, name, slug, description, icon, image_key, sort_order, is_active")
+      .order("sort_order");
+    if (error) throw new Error(error.message);
+    return data ?? [];
+  });
+
+export const adminSaveCategory = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator(
+    (data: {
+      categoryId?: string;
+      name: string;
+      description: string;
+      imageKey: string;
+      sortOrder: number;
+      isActive: boolean;
+    }) => data,
+  )
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context);
+    const name = String(data.name ?? "").trim().slice(0, 120);
+    if (!name) throw new Error("A category name is required.");
+    const row = {
+      name,
+      slug: slugify(name),
+      description: String(data.description ?? "").slice(0, 600),
+      image_key: String(data.imageKey ?? "generic"),
+      sort_order: Number(data.sortOrder) || 0,
+      is_active: Boolean(data.isActive),
+    };
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    if (data.categoryId) {
+      const { error } = await supabaseAdmin.from("categories").update(row).eq("id", String(data.categoryId));
+      if (error) throw new Error(error.message);
+    } else {
+      const { error } = await supabaseAdmin.from("categories").insert(row);
+      if (error) throw new Error(error.message);
+    }
+    await supabaseAdmin.from("audit_logs").insert({
+      actor_id: context.userId,
+      action: data.categoryId ? "category.saved" : "category.created",
+      entity: "categories",
+      entity_id: data.categoryId ?? null,
+      metadata: { name: row.name },
+    });
+    return { ok: true };
   });
