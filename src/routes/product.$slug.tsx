@@ -11,6 +11,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { ProductCard } from "@/components/store/product-card";
+import { WishlistButton } from "@/components/store/wishlist-button";
 import { useCart } from "@/lib/cart";
 import {
   artFor,
@@ -140,6 +141,7 @@ function ProductPage() {
             <Button asChild size="lg" variant="secondary">
               <Link to="/cart">View cart</Link>
             </Button>
+            <WishlistButton productId={product.id} />
           </div>
 
           <dl className="mt-8 grid gap-4 rounded-lg border border-border bg-card p-5 text-sm sm:grid-cols-2">

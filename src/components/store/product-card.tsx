@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { Star } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { WishlistButton } from "@/components/store/wishlist-button";
 import { useCart } from "@/lib/cart";
 import { artFor, formatPrice, priceOf, STOCK_LABEL } from "@/lib/catalog";
 import type { CatalogProduct } from "@/lib/catalog.functions";
@@ -41,6 +42,9 @@ export function ProductCard({ product }: { product: CatalogProduct }) {
           )}
         </div>
       </Link>
+      <div className="absolute right-3 top-3">
+        <WishlistButton productId={product.id} variant="icon" />
+      </div>
 
       <div className="flex flex-1 flex-col p-4">
         <p className="text-xs text-muted-foreground">
