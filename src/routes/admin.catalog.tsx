@@ -220,7 +220,7 @@ function AdminCatalog() {
             className="flex gap-3 rounded-lg border border-border bg-card p-3"
           >
             <img
-              src={artFor(product.id ? (product as { image_key?: string }).image_key ?? "digital" : "digital")}
+              src={artFor(product.image_key)}
               alt=""
               width={72}
               height={72}
@@ -280,7 +280,7 @@ function ProductForm({
   onChange: (next: ProductDraft) => void;
   onCancel: () => void;
   onSave: () => void;
-  onDelete?: () => void;
+  onDelete?: (() => void) | undefined;
 }) {
   const patch = (next: Partial<ProductDraft>) => onChange({ ...draft, ...next });
 

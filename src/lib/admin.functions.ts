@@ -160,7 +160,7 @@ export const adminListProducts = createServerFn({ method: "GET" })
     const [{ data: products, error }, { data: keys }, { data: categories }] = await Promise.all([
       supabaseAdmin
         .from("products")
-        .select("id, name, slug, price, sale_price, currency, stock_status, category_id, product_type, platform")
+        .select("id, name, slug, price, sale_price, currency, stock_status, category_id, product_type, platform, image_key")
         .order("name"),
       supabaseAdmin.from("inventory_items").select("product_id, status"),
       supabaseAdmin.from("categories").select("id, name").order("sort_order"),
