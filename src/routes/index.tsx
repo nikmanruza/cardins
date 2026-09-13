@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import {
   Zap,
@@ -41,6 +41,12 @@ export const Route = createFileRoute("/")({
       },
     ],
   }),
+  // Visiting the store on an "admin." subdomain lands straight on the admin area.
+  beforeLoad: () => {
+    if (typeof window !== "undefined" && window.location.hostname.startsWith("admin.")) {
+      throw redirect({ to: "/admin" });
+    }
+  },
   loader: ({ context }) => {
     context.queryClient.ensureQueryData(productsQuery());
     context.queryClient.ensureQueryData(categoriesQuery());
