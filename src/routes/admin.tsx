@@ -30,6 +30,7 @@ const TABS = [
   { label: "Products", to: "/admin/products" as const },
   { label: "Orders", to: "/admin/orders" as const },
   { label: "Inventory", to: "/admin/inventory" as const },
+  { label: "Messages", to: "/admin/messages" as const },
   { label: "Activity", to: "/admin/activity" as const },
 ];
 
