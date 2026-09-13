@@ -89,6 +89,45 @@ export type Database = {
         }
         Relationships: []
       }
+      contact_messages: {
+        Row: {
+          admin_note: string
+          created_at: string
+          email: string
+          id: string
+          message: string
+          name: string
+          order_reference: string | null
+          status: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          admin_note?: string
+          created_at?: string
+          email: string
+          id?: string
+          message: string
+          name: string
+          order_reference?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          admin_note?: string
+          created_at?: string
+          email?: string
+          id?: string
+          message?: string
+          name?: string
+          order_reference?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       inventory_items: {
         Row: {
           allocated_at: string | null
