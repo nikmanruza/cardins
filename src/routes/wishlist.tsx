@@ -12,13 +12,13 @@ import { useAuth } from "@/lib/use-auth";
 export const Route = createFileRoute("/wishlist")({
   head: () => ({
     meta: [
-      { title: "Your Wishlist — NexusKeys" },
+      { title: "Your Wishlist — CardinsPro" },
       {
         name: "description",
         content: "Save game cards, gift cards and accounts to buy later, synced to your account.",
       },
-      { property: "og:title", content: "Your Wishlist — NexusKeys" },
-      { property: "og:description", content: "Products you saved for later on NexusKeys." },
+      { property: "og:title", content: "Your Wishlist — CardinsPro" },
+      { property: "og:description", content: "Products you saved for later on CardinsPro." },
       { name: "robots", content: "noindex" },
     ],
   }),

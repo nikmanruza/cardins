@@ -21,7 +21,9 @@ export const wishlistQuery = (userId: string | undefined) =>
     queryFn: async (): Promise<WishlistEntry[]> => {
       const { data, error } = await supabase
         .from("wishlist_items")
-        .select("id, product_id, products(name, slug, image_key, price, sale_price, currency, stock_status)")
+        .select(
+          "id, product_id, products(name, slug, image_key, price, sale_price, currency, stock_status)",
+        )
         .order("created_at", { ascending: false });
       if (error) throw new Error(error.message);
 

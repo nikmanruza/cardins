@@ -23,16 +23,16 @@ type ShopSearch = { q?: string | undefined };
 
 export const Route = createFileRoute("/shop")({
   validateSearch: (search: Record<string, unknown>): ShopSearch =>
-    typeof search['q'] === "string" ? { q: search['q'] } : {},
+    typeof search["q"] === "string" ? { q: search["q"] } : {},
   head: () => ({
     meta: [
-      { title: "Shop All Digital Gaming Products — NexusKeys" },
+      { title: "Shop All Digital Gaming Products — CardinsPro" },
       {
         name: "description",
         content:
           "Browse every game card, gift card, game account and digital product, with search, filters and sorting.",
       },
-      { property: "og:title", content: "Shop All Digital Gaming Products — NexusKeys" },
+      { property: "og:title", content: "Shop All Digital Gaming Products — CardinsPro" },
       {
         property: "og:description",
         content: "Search and filter game cards, gift cards, accounts and digital products.",
@@ -70,7 +70,10 @@ function ShopPage() {
   const [page, setPage] = React.useState(1);
   const [filtersOpen, setFiltersOpen] = React.useState(false);
 
-  React.useEffect(() => setPage(1), [query, selectedCategories, selectedPlatforms, selectedRegions, maxPrice, sort]);
+  React.useEffect(
+    () => setPage(1),
+    [query, selectedCategories, selectedPlatforms, selectedRegions, maxPrice, sort],
+  );
 
   const platforms = Array.from(
     new Set(products.map((product) => product.platform).filter(Boolean) as string[]),
@@ -96,7 +99,11 @@ function ShopPage() {
         selectedRegions.length === 0 ||
         (product.region !== null && selectedRegions.includes(product.region));
       return (
-        matchesTerm && matchesCategory && matchesPlatform && matchesRegion && priceOf(product) <= maxPrice
+        matchesTerm &&
+        matchesCategory &&
+        matchesPlatform &&
+        matchesRegion &&
+        priceOf(product) <= maxPrice
       );
     })
     .sort(sorter(sort));

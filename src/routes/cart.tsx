@@ -3,14 +3,18 @@ import { Minus, Plus, Trash2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/lib/cart";
+import { useCurrency } from "@/lib/currency";
 import { artFor, formatPrice } from "@/lib/catalog";
 
 export const Route = createFileRoute("/cart")({
   head: () => ({
     meta: [
-      { title: "Your Cart — NexusKeys" },
-      { name: "description", content: "Review the digital gaming products in your cart before checkout." },
-      { property: "og:title", content: "Your Cart — NexusKeys" },
+      { title: "Your Cart — CardinsPro" },
+      {
+        name: "description",
+        content: "Review the digital gaming products in your cart before checkout.",
+      },
+      { property: "og:title", content: "Your Cart — CardinsPro" },
       { property: "og:description", content: "Review your cart before secure checkout." },
       { name: "robots", content: "noindex" },
     ],
@@ -20,6 +24,7 @@ export const Route = createFileRoute("/cart")({
 
 function CartPage() {
   const { lines, subtotal, setQuantity, remove, clear } = useCart();
+  const { currency, convertPrice } = useCurrency();
 
   if (lines.length === 0) {
     return (
@@ -60,7 +65,7 @@ function CartPage() {
                   {line.name}
                 </Link>
                 <p className="mt-1 text-sm text-muted-foreground">
-                  {formatPrice(line.unitPrice, line.currency)} each
+                  {formatPrice(convertPrice(line.unitPrice, line.currency, currency), currency)} each
                 </p>
                 <div className="mt-3 flex items-center gap-2">
                   <Button
@@ -91,7 +96,7 @@ function CartPage() {
                 </div>
               </div>
               <div className="text-right font-medium">
-                {formatPrice(line.unitPrice * line.quantity, line.currency)}
+                {formatPrice(convertPrice(line.unitPrice * line.quantity, line.currency, currency), currency)}
               </div>
             </li>
           ))}
@@ -102,7 +107,7 @@ function CartPage() {
           <dl className="mt-4 space-y-2 text-sm">
             <div className="flex justify-between">
               <dt className="text-muted-foreground">Subtotal</dt>
-              <dd>{formatPrice(subtotal)}</dd>
+              <dd>{formatPrice(convertPrice(subtotal, "USD", currency), currency)}</dd>
             </div>
             <div className="flex justify-between">
               <dt className="text-muted-foreground">Delivery</dt>
@@ -111,7 +116,7 @@ function CartPage() {
           </dl>
           <div className="mt-4 flex justify-between border-t border-border pt-4 font-display text-base font-semibold">
             <span>Total</span>
-            <span>{formatPrice(subtotal)}</span>
+            <span>{formatPrice(convertPrice(subtotal, "USD", currency), currency)}</span>
           </div>
           <Button asChild size="lg" className="mt-5 w-full">
             <Link to="/checkout">Proceed to checkout</Link>

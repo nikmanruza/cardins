@@ -1,5 +1,5 @@
 import * as React from "react";
-import { createFileRoute, Link, Outlet } from "@tanstack/react-router";
+import { createFileRoute, Link, Outlet, redirect } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { KeyRound, Loader2, ShieldAlert } from "lucide-react";
@@ -12,12 +12,30 @@ import { getMyAccess, unlockAdminWithCode } from "@/lib/admin.functions";
 import { useAuth } from "@/lib/use-auth";
 
 export const Route = createFileRoute("/admin")({
+  beforeLoad: () => {
+    if (typeof window === "undefined") return;
+
+    const host = window.location.hostname.toLowerCase();
+    if (host.startsWith("admin.")) return;
+
+    const isLocalHost = ["localhost", "127.0.0.1", "0.0.0.0", "admin.localhost"].includes(host);
+    if (isLocalHost) return;
+
+    const hostname = host.replace(/^www\./, "");
+    const protocol = window.location.protocol;
+    const suffix = window.location.port ? `:${window.location.port}` : "";
+    const target = `${protocol}//admin.${hostname}${suffix}/admin`;
+
+    if (window.location.pathname !== "/admin") {
+      window.location.replace(target);
+    }
+  },
   head: () => ({
     meta: [
-      { title: "Store Admin — NexusKeys" },
+      { title: "Store Admin — CardinsPro" },
       { name: "description", content: "Manage products, orders, inventory codes and activity." },
-      { property: "og:title", content: "Store Admin — NexusKeys" },
-      { property: "og:description", content: "Internal store management for NexusKeys." },
+      { property: "og:title", content: "Store Admin — CardinsPro" },
+      { property: "og:description", content: "Internal store management for CardinsPro." },
       { name: "robots", content: "noindex" },
     ],
   }),
@@ -53,7 +71,10 @@ function AdminLayout() {
 
   if (!user) {
     return (
-      <Gate title="Sign in to continue" body="Store management is only available to signed-in staff.">
+      <Gate
+        title="Sign in to continue"
+        body="Store management is only available to signed-in staff."
+      >
         <Button asChild>
           <Link to="/auth" search={{ next: "/admin" }}>
             Sign in
@@ -68,28 +89,37 @@ function AdminLayout() {
   }
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8 sm:py-10">
-      <h1 className="font-display text-2xl font-semibold sm:text-3xl tracking-tight">Store admin</h1>
-      <p className="mt-2 text-sm text-muted-foreground">
-        Signed in as {access.data.email ?? user.email}
-      </p>
+    <div className="admin-page-shell">
+      <div className="admin-page-frame">
+        <div className="admin-page-heading">
+          <div>
+            <span className="admin-kicker">CardinsPro // Control Room</span>
+            <h1 className="font-display text-2xl font-semibold sm:text-3xl tracking-tight">
+              Store admin
+            </h1>
+          </div>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Signed in as {access.data.email ?? user.email}
+          </p>
+        </div>
 
-      <nav className="mt-6 -mx-4 flex gap-1 overflow-x-auto border-b border-border px-4 pb-2 sm:mx-0 sm:flex-wrap sm:px-0">
-        {TABS.map((tab) => (
-          <Link
-            key={tab.to}
-            to={tab.to}
-            activeOptions={{ exact: tab.to === "/admin" }}
-            activeProps={{ className: "bg-secondary text-foreground" }}
-            className="shrink-0 whitespace-nowrap rounded-md px-3 py-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
-          >
-            {tab.label}
-          </Link>
-        ))}
-      </nav>
+        <nav className="admin-tabs mt-6 -mx-4 flex gap-1 overflow-x-auto border-b border-border px-4 pb-2 sm:mx-0 sm:flex-wrap sm:px-0">
+          {TABS.map((tab) => (
+            <Link
+              key={tab.to}
+              to={tab.to}
+              activeOptions={{ exact: tab.to === "/admin" }}
+              activeProps={{ className: "bg-secondary text-foreground" }}
+              className="shrink-0 whitespace-nowrap rounded-md px-3 py-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
+            >
+              {tab.label}
+            </Link>
+          ))}
+        </nav>
 
-      <div className="mt-8">
-        <Outlet />
+        <div className="admin-page-content mt-8">
+          <Outlet />
+        </div>
       </div>
     </div>
   );

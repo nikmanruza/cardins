@@ -73,12 +73,11 @@ function AdminProducts() {
           </thead>
           <tbody>
             {(products.data?.products ?? []).map((product) => {
-              const row =
-                draft[product.id] ?? {
-                  price: String(product.price),
-                  salePrice: product.sale_price === null ? "" : String(product.sale_price),
-                  stockStatus: product.stock_status as StockStatus,
-                };
+              const row = draft[product.id] ?? {
+                price: String(product.price),
+                salePrice: product.sale_price === null ? "" : String(product.sale_price),
+                stockStatus: product.stock_status as StockStatus,
+              };
               const patch = (next: Partial<typeof row>) =>
                 setDraft((current) => ({ ...current, [product.id]: { ...row, ...next } }));
 
@@ -136,12 +135,15 @@ function AdminProducts() {
                         save.mutate({
                           productId: product.id,
                           price: Number(row.price) || 0,
-                          salePrice: row.salePrice.trim() === "" ? null : Number(row.salePrice) || 0,
+                          salePrice:
+                            row.salePrice.trim() === "" ? null : Number(row.salePrice) || 0,
                           stockStatus: row.stockStatus,
                         })
                       }
                     >
-                      {save.isPending && <Loader2 className="mr-2 size-3.5 animate-spin" aria-hidden />}
+                      {save.isPending && (
+                        <Loader2 className="mr-2 size-3.5 animate-spin" aria-hidden />
+                      )}
                       Save
                     </Button>
                   </td>

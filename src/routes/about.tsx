@@ -5,13 +5,13 @@ import { Button } from "@/components/ui/button";
 export const Route = createFileRoute("/about")({
   head: () => ({
     meta: [
-      { title: "About NexusKeys — Digital Gaming Marketplace" },
+      { title: "About CardinsPro — Digital Gaming Marketplace" },
       {
         name: "description",
         content:
-          "NexusKeys is a digital gaming marketplace focused on fast delivery, verified listings and secure checkout.",
+          "CardinsPro is a digital gaming marketplace focused on fast delivery, verified listings and secure checkout.",
       },
-      { property: "og:title", content: "About NexusKeys" },
+      { property: "og:title", content: "About CardinsPro" },
       {
         property: "og:description",
         content: "Who we are and how we handle delivery, regions and buyer protection.",
@@ -24,12 +24,13 @@ export const Route = createFileRoute("/about")({
 function AboutPage() {
   return (
     <div className="mx-auto max-w-3xl px-4 py-14">
-      <h1 className="font-display text-3xl font-semibold tracking-tight">About NexusKeys</h1>
+      <h1 className="font-display text-3xl font-semibold tracking-tight">About CardinsPro</h1>
       <div className="mt-6 space-y-5 text-sm leading-relaxed text-muted-foreground">
         <p>
-          NexusKeys is a digital marketplace for gaming products: platform game cards, gift cards,
+          CardinsPro is a digital marketplace for gaming products: platform game cards, gift cards,
           subscriptions, digital goods and approved game accounts. Everything we sell is delivered
-          digitally, so there is nothing to ship and nothing to wait for beyond payment confirmation.
+          digitally, so there is nothing to ship and nothing to wait for beyond payment
+          confirmation.
         </p>
         <p>
           Every listing states the platform, region and delivery method up front, because those are

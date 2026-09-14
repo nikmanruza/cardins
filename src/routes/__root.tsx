@@ -3,6 +3,7 @@ import {
   Outlet,
   Link,
   createRootRouteWithContext,
+  redirect,
   useRouter,
   HeadContent,
   Scripts,
@@ -12,6 +13,7 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { CartProvider } from "@/lib/cart";
+import { CurrencyProvider } from "@/lib/currency";
 import { ThemeProvider, themeBootstrapScript } from "@/lib/theme";
 import { AuthProvider } from "@/lib/use-auth";
 import { SiteHeader } from "@/components/site/site-header";
@@ -80,17 +82,22 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
 }
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
+  beforeLoad: () => {
+    if (typeof window !== "undefined" && window.location.hostname.startsWith("admin.")) {
+      throw redirect({ to: "/admin" });
+    }
+  },
   head: () => ({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "NexusKeys — Digital Game Keys, Cards & Accounts" },
+      { title: "CardinsPro — Digital Game Keys, Cards & Accounts" },
       {
         name: "description",
         content:
           "Buy game cards, gift cards and game accounts with instant digital delivery and secure checkout.",
       },
-      { property: "og:title", content: "NexusKeys — Digital Game Keys & Gift Cards" },
+      { property: "og:title", content: "CardinsPro — Digital Game Keys & Gift Cards" },
       {
         property: "og:description",
         content: "Instant delivery of game cards, gift cards and game accounts.",
@@ -136,22 +143,75 @@ function RootShell({ children }: { children: ReactNode }) {
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
 
+  useEffect(() => {
+    if (typeof window === "undefined") return undefined;
+
+    const playedKey = "cardinspro_first_load_chime_played";
+    if (window.localStorage.getItem(playedKey) === "1") return undefined;
+
+    const AudioCtor =
+      window.AudioContext ??
+      (window as typeof window & { webkitAudioContext?: typeof AudioContext })
+        .webkitAudioContext;
+    if (!AudioCtor) {
+      window.localStorage.setItem(playedKey, "1");
+      return undefined;
+    }
+
+    const context = new AudioCtor();
+    const now = context.currentTime + 0.04;
+    const master = context.createGain();
+    master.gain.setValueAtTime(0, now);
+    master.gain.setTargetAtTime(0.026, now, 0.12);
+    master.gain.setTargetAtTime(0.0001, now + 0.18, 0.22);
+    master.connect(context.destination);
+
+    const chimeA = context.createOscillator();
+    chimeA.type = "sine";
+    chimeA.frequency.setValueAtTime(660, now);
+    chimeA.frequency.setTargetAtTime(990, now + 0.14, 0.04);
+    chimeA.connect(master);
+
+    const chimeB = context.createOscillator();
+    chimeB.type = "triangle";
+    chimeB.frequency.setValueAtTime(1320, now);
+    chimeB.frequency.setTargetAtTime(1760, now + 0.2, 0.04);
+    chimeB.connect(master);
+
+    chimeA.start(now);
+    chimeB.start(now);
+    chimeA.stop(now + 0.24);
+    chimeB.stop(now + 0.25);
+
+    window.localStorage.setItem(playedKey, "1");
+
+    return () => {
+      try {
+        void context.close();
+      } catch {
+        // no-op for browsers that block closing an already-closed audio context
+      }
+    };
+  }, []);
+
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
         <AuthProvider>
-          <CartProvider>
-            <div className="flex min-h-screen flex-col bg-background">
-              <SiteHeader />
-              <main className="flex-1">
-                {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-                <Outlet />
-              </main>
-              <SiteFooter />
-              <CartDrawer />
-              <Toaster />
-            </div>
-          </CartProvider>
+          <CurrencyProvider>
+            <CartProvider>
+              <div className="flex min-h-screen flex-col bg-background">
+                <SiteHeader />
+                <main className="flex-1">
+                  {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+                  <Outlet />
+                </main>
+                <SiteFooter />
+                <CartDrawer />
+                <Toaster />
+              </div>
+            </CartProvider>
+          </CurrencyProvider>
         </AuthProvider>
       </ThemeProvider>
     </QueryClientProvider>

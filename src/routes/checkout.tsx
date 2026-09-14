@@ -15,12 +15,13 @@ import { useAuth } from "@/lib/use-auth";
 export const Route = createFileRoute("/checkout")({
   head: () => ({
     meta: [
-      { title: "Secure Checkout — NexusKeys" },
+      { title: "Secure Checkout — CardinsPro" },
       {
         name: "description",
-        content: "Complete your order for digital gaming products with secure, server-verified checkout.",
+        content:
+          "Complete your order for digital gaming products with secure, server-verified checkout.",
       },
-      { property: "og:title", content: "Secure Checkout — NexusKeys" },
+      { property: "og:title", content: "Secure Checkout — CardinsPro" },
       { property: "og:description", content: "Secure checkout for digital gaming products." },
       { name: "robots", content: "noindex" },
     ],
@@ -51,7 +52,10 @@ function CheckoutPage() {
     setBusy(true);
     try {
       const order = await create({
-        data: { items: lines.map((line) => ({ productId: line.productId, quantity: line.quantity })), email },
+        data: {
+          items: lines.map((line) => ({ productId: line.productId, quantity: line.quantity })),
+          email,
+        },
       });
       const result = await pay({ data: { orderId: order.orderId } });
       setPlaced({ email, reference: result.reference, delivered: result.delivered });
@@ -69,8 +73,8 @@ function CheckoutPage() {
         <CheckCircle2 className="mx-auto size-10 text-success" aria-hidden />
         <h1 className="mt-4 font-display text-2xl font-semibold">Order confirmed</h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          Order reference <span className="text-foreground">{placed.reference}</span>. A copy is on its
-          way to {placed.email}.{" "}
+          Order reference <span className="text-foreground">{placed.reference}</span>. A copy is on
+          its way to {placed.email}.{" "}
           {placed.delivered > 0
             ? `${placed.delivered} code${placed.delivered === 1 ? "" : "s"} are ready in your library.`
             : "Your codes will appear in your library as soon as they are released."}
@@ -103,7 +107,8 @@ function CheckoutPage() {
     <div className="mx-auto max-w-5xl px-4 py-10">
       <h1 className="font-display text-3xl font-semibold tracking-tight">Checkout</h1>
       <p className="mt-2 inline-flex items-center gap-2 text-sm text-muted-foreground">
-        <Lock className="size-4" aria-hidden /> Your order is verified on our servers before delivery.
+        <Lock className="size-4" aria-hidden /> Your order is verified on our servers before
+        delivery.
       </p>
 
       <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_320px]">

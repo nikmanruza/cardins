@@ -15,12 +15,12 @@ import { useAuth } from "@/lib/use-auth";
 export const Route = createFileRoute("/account")({
   head: () => ({
     meta: [
-      { title: "Your Library & Orders — NexusKeys" },
+      { title: "Your Library & Orders — CardinsPro" },
       {
         name: "description",
-        content: "See your NexusKeys orders, reveal delivered codes and manage your account.",
+        content: "See your CardinsPro orders, reveal delivered codes and manage your account.",
       },
-      { property: "og:title", content: "Your Library — NexusKeys" },
+      { property: "og:title", content: "Your Library — CardinsPro" },
       { property: "og:description", content: "Orders and delivered codes in one place." },
       { name: "robots", content: "noindex" },
     ],
@@ -134,8 +134,14 @@ function AccountPage() {
           <p className="mt-1 text-sm text-muted-foreground">
             No administrator exists yet. As the store owner you can take that role now.
           </p>
-          <Button className="mt-4" disabled={claimMutation.isPending} onClick={() => claimMutation.mutate()}>
-            {claimMutation.isPending && <Loader2 className="mr-2 size-4 animate-spin" aria-hidden />}
+          <Button
+            className="mt-4"
+            disabled={claimMutation.isPending}
+            onClick={() => claimMutation.mutate()}
+          >
+            {claimMutation.isPending && (
+              <Loader2 className="mr-2 size-4 animate-spin" aria-hidden />
+            )}
             Become the administrator
           </Button>
         </div>
@@ -162,7 +168,10 @@ function AccountPage() {
 
         <div className="mt-4 space-y-4">
           {(orders.data ?? []).map((order) => (
-            <article key={order.id} className="rounded-lg border border-border bg-card p-5 shadow-card">
+            <article
+              key={order.id}
+              className="rounded-lg border border-border bg-card p-5 shadow-card"
+            >
               <header className="flex flex-wrap items-center justify-between gap-3">
                 <div>
                   <p className="font-display text-base font-semibold">{order.reference}</p>
@@ -171,7 +180,9 @@ function AccountPage() {
                   </p>
                 </div>
                 <div className="flex items-center gap-3">
-                  <Badge className={STATUS_TONE[order.status] ?? "bg-secondary"}>{order.status}</Badge>
+                  <Badge className={STATUS_TONE[order.status] ?? "bg-secondary"}>
+                    {order.status}
+                  </Badge>
                   <span className="font-display text-base font-semibold">
                     {formatPrice(order.total, order.currency)}
                   </span>
@@ -180,7 +191,10 @@ function AccountPage() {
 
               <ul className="mt-4 space-y-4">
                 {order.items.map((item) => (
-                  <li key={item.id} className="flex flex-wrap items-center gap-4 border-t border-border pt-4">
+                  <li
+                    key={item.id}
+                    className="flex flex-wrap items-center gap-4 border-t border-border pt-4"
+                  >
                     <img
                       src={artFor(item.imageKey)}
                       alt={item.productName}

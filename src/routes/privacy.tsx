@@ -3,13 +3,13 @@ import { createFileRoute } from "@tanstack/react-router";
 export const Route = createFileRoute("/privacy")({
   head: () => ({
     meta: [
-      { title: "Privacy Policy — NexusKeys" },
+      { title: "Privacy Policy — CardinsPro" },
       {
         name: "description",
         content:
-          "How NexusKeys collects, uses and protects your personal data when you buy digital gaming products.",
+          "How CardinsPro collects, uses and protects your personal data when you buy digital gaming products.",
       },
-      { property: "og:title", content: "Privacy Policy — NexusKeys" },
+      { property: "og:title", content: "Privacy Policy — CardinsPro" },
       { property: "og:description", content: "How we handle your data and payment information." },
     ],
   }),

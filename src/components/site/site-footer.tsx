@@ -38,7 +38,7 @@ export function SiteFooter() {
             <span className="grid size-8 place-items-center rounded-md bg-primary-soft text-primary">
               <Zap className="size-4" aria-hidden />
             </span>
-            <span className="font-display text-base font-semibold">NexusKeys</span>
+            <span className="font-display text-base font-semibold">CardinsPro</span>
           </div>
           <p className="mt-4 max-w-xs text-sm leading-relaxed text-muted-foreground">
             A digital gaming marketplace for game cards, gift cards and approved digital products,
@@ -66,8 +66,8 @@ export function SiteFooter() {
       </div>
       <div className="border-t border-border">
         <p className="mx-auto max-w-7xl px-4 py-6 text-xs text-muted-foreground">
-          © {new Date().getFullYear()} NexusKeys. Products are sold only where publisher and platform
-          terms permit.
+          © {new Date().getFullYear()} CardinsPro. Products are sold only where publisher and
+          platform terms permit.
         </p>
       </div>
     </footer>

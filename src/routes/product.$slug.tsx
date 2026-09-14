@@ -13,6 +13,7 @@ import {
 import { ProductCard } from "@/components/store/product-card";
 import { WishlistButton } from "@/components/store/wishlist-button";
 import { useCart } from "@/lib/cart";
+import { useCurrency } from "@/lib/currency";
 import {
   artFor,
   formatPrice,
@@ -33,11 +34,14 @@ export const Route = createFileRoute("/product/$slug")({
   head: ({ loaderData }) => {
     if (!loaderData) {
       return {
-        meta: [{ title: "Product unavailable — NexusKeys" }, { name: "robots", content: "noindex" }],
+        meta: [
+          { title: "Product unavailable — CardinsPro" },
+          { name: "robots", content: "noindex" },
+        ],
       };
     }
     const { product } = loaderData;
-    const title = product.seo_title ?? `${product.name} — NexusKeys`;
+    const title = product.seo_title ?? `${product.name} — CardinsPro`;
     const description = product.seo_description ?? product.short_description;
     return {
       meta: [
@@ -56,6 +60,7 @@ function ProductPage() {
   const { product } = Route.useLoaderData();
   const { data: products } = useSuspenseQuery(productsQuery());
   const { add, openCart } = useCart();
+  const { currency, convertPrice } = useCurrency();
 
   const price = priceOf(product);
   const soldOut = product.stock_status === "OUT_OF_STOCK";
@@ -64,13 +69,14 @@ function ProductPage() {
     .slice(0, 4);
 
   const addToCart = () => {
+    const convertedPrice = convertPrice(price, product.currency, currency);
     add({
       productId: product.id,
       slug: product.slug,
       name: product.name,
       imageKey: product.image_key,
-      unitPrice: price,
-      currency: product.currency,
+      unitPrice: convertedPrice,
+      currency,
     });
     openCart();
   };
@@ -125,11 +131,11 @@ function ProductPage() {
 
           <div className="mt-6 flex items-baseline gap-3">
             <span className="font-display text-3xl font-semibold">
-              {formatPrice(price, product.currency)}
+              {formatPrice(convertPrice(price, product.currency, currency), currency)}
             </span>
             {product.sale_price !== null && (
               <span className="text-base text-muted-foreground line-through">
-                {formatPrice(product.price, product.currency)}
+                {formatPrice(convertPrice(product.price, product.currency, currency), currency)}
               </span>
             )}
           </div>
@@ -192,15 +198,7 @@ function ProductPage() {
   );
 }
 
-function Detail({
-  icon: Icon,
-  label,
-  value,
-}: {
-  icon: typeof Zap;
-  label: string;
-  value: string;
-}) {
+function Detail({ icon: Icon, label, value }: { icon: typeof Zap; label: string; value: string }) {
   return (
     <div className="flex gap-3">
       <Icon className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden />

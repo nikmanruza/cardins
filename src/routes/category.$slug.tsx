@@ -16,11 +16,14 @@ export const Route = createFileRoute("/category/$slug")({
   head: ({ loaderData }) => {
     if (!loaderData) {
       return {
-        meta: [{ title: "Category unavailable — NexusKeys" }, { name: "robots", content: "noindex" }],
+        meta: [
+          { title: "Category unavailable — CardinsPro" },
+          { name: "robots", content: "noindex" },
+        ],
       };
     }
     const { category } = loaderData;
-    const title = category.seo_title ?? `${category.name} — NexusKeys`;
+    const title = category.seo_title ?? `${category.name} — CardinsPro`;
     const description = category.seo_description ?? category.description;
     return {
       meta: [

@@ -12,13 +12,13 @@ import { Button } from "@/components/ui/button";
 export const Route = createFileRoute("/support")({
   head: () => ({
     meta: [
-      { title: "Help & Support — NexusKeys" },
+      { title: "Help & Support — CardinsPro" },
       {
         name: "description",
         content:
           "Get help with orders, redeeming codes, regions and refunds for digital gaming products.",
       },
-      { property: "og:title", content: "Help & Support — NexusKeys" },
+      { property: "og:title", content: "Help & Support — CardinsPro" },
       { property: "og:description", content: "Help with orders, codes, regions and refunds." },
     ],
   }),
@@ -26,7 +26,11 @@ export const Route = createFileRoute("/support")({
 });
 
 const TOPICS = [
-  { icon: KeyRound, title: "Redeeming codes", copy: "Step-by-step redemption help for each platform." },
+  {
+    icon: KeyRound,
+    title: "Redeeming codes",
+    copy: "Step-by-step redemption help for each platform.",
+  },
   { icon: RefreshCcw, title: "Order issues", copy: "Missing, delayed or already-used codes." },
   { icon: Mail, title: "Contact us", copy: "Reach the team with your order reference." },
 ];
@@ -54,7 +58,9 @@ function SupportPage() {
   return (
     <div className="mx-auto max-w-3xl px-4 py-14">
       <LifeBuoy className="size-6 text-primary" aria-hidden />
-      <h1 className="mt-4 font-display text-3xl font-semibold tracking-tight">Help &amp; support</h1>
+      <h1 className="mt-4 font-display text-3xl font-semibold tracking-tight">
+        Help &amp; support
+      </h1>
       <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
         Answers to the most common questions about orders, delivery and redemption.
       </p>

@@ -71,9 +71,14 @@ function AdminCatalog() {
   const saveCategory = useServerFn(adminSaveCategory);
 
   const products = useQuery({ queryKey: ["admin-products"], queryFn: () => fetchProducts({}) });
-  const categories = useQuery({ queryKey: ["admin-categories"], queryFn: () => fetchCategories({}) });
+  const categories = useQuery({
+    queryKey: ["admin-categories"],
+    queryFn: () => fetchCategories({}),
+  });
 
-  const [editing, setEditing] = React.useState<{ id: string | null; draft: ProductDraft } | null>(null);
+  const [editing, setEditing] = React.useState<{ id: string | null; draft: ProductDraft } | null>(
+    null,
+  );
   const [newCategory, setNewCategory] = React.useState("");
 
   const refresh = () => {
@@ -117,7 +122,8 @@ function AdminCatalog() {
         },
       });
     },
-    onError: (error) => toast.error(error instanceof Error ? error.message : "Couldn't open that product."),
+    onError: (error) =>
+      toast.error(error instanceof Error ? error.message : "Couldn't open that product."),
   });
 
   const persist = useMutation({
@@ -130,7 +136,8 @@ function AdminCatalog() {
       setEditing(null);
       refresh();
     },
-    onError: (error) => toast.error(error instanceof Error ? error.message : "Couldn't save the product."),
+    onError: (error) =>
+      toast.error(error instanceof Error ? error.message : "Couldn't save the product."),
   });
 
   const remove = useMutation({
@@ -140,18 +147,22 @@ function AdminCatalog() {
       setEditing(null);
       refresh();
     },
-    onError: (error) => toast.error(error instanceof Error ? error.message : "Couldn't remove the product."),
+    onError: (error) =>
+      toast.error(error instanceof Error ? error.message : "Couldn't remove the product."),
   });
 
   const addCategory = useMutation({
     mutationFn: (name: string) =>
-      saveCategory({ data: { name, description: "", imageKey: "generic", sortOrder: 99, isActive: true } }),
+      saveCategory({
+        data: { name, description: "", imageKey: "generic", sortOrder: 99, isActive: true },
+      }),
     onSuccess: () => {
       toast.success("Category added.");
       setNewCategory("");
       refresh();
     },
-    onError: (error) => toast.error(error instanceof Error ? error.message : "Couldn't add the category."),
+    onError: (error) =>
+      toast.error(error instanceof Error ? error.message : "Couldn't add the category."),
   });
 
   if (products.isPending || categories.isPending) {
@@ -177,7 +188,8 @@ function AdminCatalog() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <p className="max-w-xl text-sm text-muted-foreground">
-          Add new products, edit their descriptions, prices and images, or remove them from the store.
+          Add new products, edit their descriptions, prices and images, or remove them from the
+          store.
         </p>
         <Button onClick={openNew} className="w-full sm:w-auto">
           <Plus className="mr-2 size-4" aria-hidden /> Add product
@@ -215,10 +227,7 @@ function AdminCatalog() {
 
       <ul className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
         {(products.data?.products ?? []).map((product) => (
-          <li
-            key={product.id}
-            className="flex gap-3 rounded-lg border border-border bg-card p-3"
-          >
+          <li key={product.id} className="flex gap-3 rounded-lg border border-border bg-card p-3">
             <img
               src={artFor(product.image_key)}
               alt=""
@@ -234,7 +243,8 @@ function AdminCatalog() {
                 {STOCK_LABEL[product.stock_status as keyof typeof STOCK_LABEL]}
               </p>
               <p className="mt-0.5 text-xs text-muted-foreground">
-                {TYPE_LABEL[product.product_type as keyof typeof TYPE_LABEL]} · {product.availableKeys} codes
+                {TYPE_LABEL[product.product_type as keyof typeof TYPE_LABEL]} ·{" "}
+                {product.availableKeys} codes
               </p>
               <div className="mt-2 flex flex-wrap gap-2">
                 <Button
@@ -303,10 +313,19 @@ function ProductForm({
 
       <div className="grid gap-4 rounded-lg border border-border bg-card p-4 sm:grid-cols-2">
         <Field label="Product name">
-          <Input value={draft.name} onChange={(e) => patch({ name: e.target.value })} required className="bg-background" />
+          <Input
+            value={draft.name}
+            onChange={(e) => patch({ name: e.target.value })}
+            required
+            className="bg-background"
+          />
         </Field>
         <Field label="Web address (leave blank to auto-fill)">
-          <Input value={draft.slug} onChange={(e) => patch({ slug: e.target.value })} className="bg-background" />
+          <Input
+            value={draft.slug}
+            onChange={(e) => patch({ slug: e.target.value })}
+            className="bg-background"
+          />
         </Field>
 
         <Field label="Category">
@@ -353,7 +372,9 @@ function ProductForm({
           <Input
             inputMode="decimal"
             value={draft.salePrice === null ? "" : String(draft.salePrice)}
-            onChange={(e) => patch({ salePrice: e.target.value === "" ? null : Number(e.target.value) || 0 })}
+            onChange={(e) =>
+              patch({ salePrice: e.target.value === "" ? null : Number(e.target.value) || 0 })
+            }
             className="bg-background"
           />
         </Field>
@@ -398,17 +419,31 @@ function ProductForm({
             height={96}
             className="size-20 rounded-md object-cover"
           />
-          <p className="text-xs text-muted-foreground">This artwork is shown on the shop and product page.</p>
+          <p className="text-xs text-muted-foreground">
+            This artwork is shown on the shop and product page.
+          </p>
         </div>
 
         <Field label="Platform">
-          <Input value={draft.platform} onChange={(e) => patch({ platform: e.target.value })} className="bg-background" />
+          <Input
+            value={draft.platform}
+            onChange={(e) => patch({ platform: e.target.value })}
+            className="bg-background"
+          />
         </Field>
         <Field label="Game">
-          <Input value={draft.game} onChange={(e) => patch({ game: e.target.value })} className="bg-background" />
+          <Input
+            value={draft.game}
+            onChange={(e) => patch({ game: e.target.value })}
+            className="bg-background"
+          />
         </Field>
         <Field label="Region">
-          <Input value={draft.region} onChange={(e) => patch({ region: e.target.value })} className="bg-background" />
+          <Input
+            value={draft.region}
+            onChange={(e) => patch({ region: e.target.value })}
+            className="bg-background"
+          />
         </Field>
         <Field label="Delivery">
           <Input
@@ -452,8 +487,16 @@ function ProductForm({
         </Field>
 
         <div className="sm:col-span-2 grid gap-3 sm:grid-cols-3">
-          <Toggle label="Featured" checked={draft.isFeatured} onChange={(v) => patch({ isFeatured: v })} />
-          <Toggle label="Best seller" checked={draft.isBestseller} onChange={(v) => patch({ isBestseller: v })} />
+          <Toggle
+            label="Featured"
+            checked={draft.isFeatured}
+            onChange={(v) => patch({ isFeatured: v })}
+          />
+          <Toggle
+            label="Best seller"
+            checked={draft.isBestseller}
+            onChange={(v) => patch({ isBestseller: v })}
+          />
           <Toggle label="New" checked={draft.isNew} onChange={(v) => patch({ isNew: v })} />
         </div>
       </div>

@@ -4,10 +4,12 @@ import { Minus, Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import { useCart } from "@/lib/cart";
+import { useCurrency } from "@/lib/currency";
 import { artFor, formatPrice } from "@/lib/catalog";
 
 export function CartDrawer() {
   const { lines, isOpen, closeCart, setQuantity, remove, subtotal } = useCart();
+  const { currency, convertPrice } = useCurrency();
 
   return (
     <Sheet open={isOpen} onOpenChange={(open) => (open ? undefined : closeCart())}>
@@ -42,7 +44,7 @@ export function CartDrawer() {
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-medium">{line.name}</p>
                     <p className="mt-0.5 text-sm text-muted-foreground">
-                      {formatPrice(line.unitPrice, line.currency)}
+                      {formatPrice(convertPrice(line.unitPrice, line.currency, currency), currency)}
                     </p>
                     <div className="mt-2 flex items-center gap-2">
                       <div className="flex items-center rounded-md border border-border">
@@ -80,7 +82,9 @@ export function CartDrawer() {
             <div className="border-t border-border p-5">
               <div className="flex items-center justify-between">
                 <span className="text-sm text-muted-foreground">Subtotal</span>
-                <span className="font-display text-lg font-semibold">{formatPrice(subtotal)}</span>
+                <span className="font-display text-lg font-semibold">
+                  {formatPrice(convertPrice(subtotal, "USD", currency), currency)}
+                </span>
               </div>
               <div className="mt-4 grid gap-2">
                 <Button asChild onClick={closeCart}>

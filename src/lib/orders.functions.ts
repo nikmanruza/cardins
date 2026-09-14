@@ -52,7 +52,8 @@ export const createOrder = createServerFn({ method: "POST" })
       .select("id, name, slug, image_key, price, sale_price, currency, stock_status")
       .in("id", ids);
     if (productError) throw new Error(productError.message);
-    if (!products || products.length !== ids.length) throw new Error("A product is no longer available.");
+    if (!products || products.length !== ids.length)
+      throw new Error("A product is no longer available.");
 
     const email = data.email || (context.claims["email"] as string | undefined) || "";
     if (!email) throw new Error("An email address is required for delivery.");
@@ -121,7 +122,8 @@ export const payOrder = createServerFn({ method: "POST" })
       .maybeSingle();
     if (error) throw new Error(error.message);
     if (!order || order.user_id !== context.userId) throw new Error("Order not found.");
-    if (order.status === "paid") return { status: "paid" as OrderStatus, delivered: 0, reference: order.reference };
+    if (order.status === "paid")
+      return { status: "paid" as OrderStatus, delivered: 0, reference: order.reference };
     if (order.status !== "pending") throw new Error("This order can no longer be paid.");
 
     const paymentReference = `SIM-${Math.random().toString(36).slice(2, 12).toUpperCase()}`;
@@ -138,9 +140,12 @@ export const payOrder = createServerFn({ method: "POST" })
       .eq("status", "pending");
     if (updateError) throw new Error(updateError.message);
 
-    const { data: delivered, error: allocError } = await supabaseAdmin.rpc("allocate_order_inventory", {
-      _order_id: order.id,
-    });
+    const { data: delivered, error: allocError } = await supabaseAdmin.rpc(
+      "allocate_order_inventory",
+      {
+        _order_id: order.id,
+      },
+    );
     if (allocError) throw new Error(allocError.message);
 
     await supabaseAdmin.from("audit_logs").insert({
@@ -151,7 +156,11 @@ export const payOrder = createServerFn({ method: "POST" })
       metadata: { reference: order.reference, delivered, payment_reference: paymentReference },
     });
 
-    return { status: "paid" as OrderStatus, delivered: Number(delivered ?? 0), reference: order.reference };
+    return {
+      status: "paid" as OrderStatus,
+      delivered: Number(delivered ?? 0),
+      reference: order.reference,
+    };
   });
 
 export const listMyOrders = createServerFn({ method: "GET" })
@@ -214,7 +223,8 @@ export const revealKeys = createServerFn({ method: "POST" })
       .maybeSingle();
     if (error) throw new Error(error.message);
     if (!item || item.orders?.user_id !== context.userId) throw new Error("Not found.");
-    if (item.orders?.status !== "paid") throw new Error("Payment for this order is not confirmed yet.");
+    if (item.orders?.status !== "paid")
+      throw new Error("Payment for this order is not confirmed yet.");
 
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: keys, error: keyError } = await supabaseAdmin
@@ -241,6 +251,10 @@ export const revealKeys = createServerFn({ method: "POST" })
     return {
       productName: item.product_name,
       instructions: product?.redemption_instructions ?? null,
-      keys: (keys ?? []).map((key) => ({ id: key.id, code: key.secret_code, deliveredAt: key.delivered_at })),
+      keys: (keys ?? []).map((key) => ({
+        id: key.id,
+        code: key.secret_code,
+        deliveredAt: key.delivered_at,
+      })),
     };
   });

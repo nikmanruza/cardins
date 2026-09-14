@@ -73,7 +73,10 @@ export const adminStats = createServerFn({ method: "GET" })
       supabaseAdmin.from("orders").select("id", { count: "exact", head: true }),
       supabaseAdmin.from("orders").select("total").eq("status", "paid"),
       supabaseAdmin.from("products").select("id", { count: "exact", head: true }),
-      supabaseAdmin.from("inventory_items").select("id", { count: "exact", head: true }).eq("status", "available"),
+      supabaseAdmin
+        .from("inventory_items")
+        .select("id", { count: "exact", head: true })
+        .eq("status", "available"),
     ]);
 
     const revenue = (paid.data ?? []).reduce((sum, row) => sum + Number(row.total), 0);
@@ -135,9 +138,12 @@ export const adminSetOrderStatus = createServerFn({ method: "POST" })
 
     let delivered = 0;
     if (data.status === "paid") {
-      const { data: count, error: allocError } = await supabaseAdmin.rpc("allocate_order_inventory", {
-        _order_id: data.orderId,
-      });
+      const { data: count, error: allocError } = await supabaseAdmin.rpc(
+        "allocate_order_inventory",
+        {
+          _order_id: data.orderId,
+        },
+      );
       if (allocError) throw new Error(allocError.message);
       delivered = Number(count ?? 0);
     }
@@ -160,7 +166,9 @@ export const adminListProducts = createServerFn({ method: "GET" })
     const [{ data: products, error }, { data: keys }, { data: categories }] = await Promise.all([
       supabaseAdmin
         .from("products")
-        .select("id, name, slug, price, sale_price, currency, stock_status, category_id, product_type, platform, image_key")
+        .select(
+          "id, name, slug, price, sale_price, currency, stock_status, category_id, product_type, platform, image_key",
+        )
         .order("name"),
       supabaseAdmin.from("inventory_items").select("product_id, status"),
       supabaseAdmin.from("categories").select("id, name").order("sort_order"),
@@ -198,7 +206,10 @@ export const adminUpdateProduct = createServerFn({ method: "POST" })
     }) => ({
       productId: String(data.productId),
       price: Math.max(0, Number(data.price)),
-      salePrice: data.salePrice === null || data.salePrice === undefined ? null : Math.max(0, Number(data.salePrice)),
+      salePrice:
+        data.salePrice === null || data.salePrice === undefined
+          ? null
+          : Math.max(0, Number(data.salePrice)),
       stockStatus: data.stockStatus,
     }),
   )
@@ -224,7 +235,9 @@ export const adminUpdateProduct = createServerFn({ method: "POST" })
 /** Inventory keys are never returned in full — only masked previews. */
 export const adminListInventory = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((data?: { productId?: string }) => ({ productId: data?.productId ? String(data.productId) : null }))
+  .inputValidator((data?: { productId?: string }) => ({
+    productId: data?.productId ? String(data.productId) : null,
+  }))
   .handler(async ({ data, context }) => {
     await assertAdmin(context);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
@@ -361,7 +374,9 @@ function slugify(value: string) {
 }
 
 function normalizeDraft(data: ProductDraft) {
-  const name = String(data.name ?? "").trim().slice(0, 160);
+  const name = String(data.name ?? "")
+    .trim()
+    .slice(0, 160);
   if (!name) throw new Error("A product name is required.");
   return {
     name,
@@ -372,7 +387,9 @@ function normalizeDraft(data: ProductDraft) {
     description: String(data.description ?? "").slice(0, 8000),
     price: Math.max(0, Number(data.price) || 0),
     sale_price:
-      data.salePrice === null || data.salePrice === undefined || Number.isNaN(Number(data.salePrice))
+      data.salePrice === null ||
+      data.salePrice === undefined ||
+      Number.isNaN(Number(data.salePrice))
         ? null
         : Math.max(0, Number(data.salePrice)),
     currency: (String(data.currency ?? "USD") || "USD").toUpperCase().slice(0, 3),
@@ -403,7 +420,11 @@ export const adminGetProduct = createServerFn({ method: "GET" })
       .maybeSingle();
     if (error) throw new Error(error.message);
     if (!row) throw new Error("That product no longer exists.");
-    return { ...row, price: Number(row.price), sale_price: row.sale_price === null ? null : Number(row.sale_price) };
+    return {
+      ...row,
+      price: Number(row.price),
+      sale_price: row.sale_price === null ? null : Number(row.sale_price),
+    };
   });
 
 export const adminCreateProduct = createServerFn({ method: "POST" })
@@ -466,7 +487,9 @@ export const adminDeleteProduct = createServerFn({ method: "POST" })
       .select("id", { count: "exact", head: true })
       .eq("product_id", data.productId);
     if ((count ?? 0) > 0) {
-      throw new Error("This product has already been ordered, so it can't be deleted. Set it to out of stock instead.");
+      throw new Error(
+        "This product has already been ordered, so it can't be deleted. Set it to out of stock instead.",
+      );
     }
     await supabaseAdmin.from("wishlist_items").delete().eq("product_id", data.productId);
     await supabaseAdmin.from("inventory_items").delete().eq("product_id", data.productId);
@@ -510,7 +533,9 @@ export const adminSaveCategory = createServerFn({ method: "POST" })
   )
   .handler(async ({ data, context }) => {
     await assertAdmin(context);
-    const name = String(data.name ?? "").trim().slice(0, 120);
+    const name = String(data.name ?? "")
+      .trim()
+      .slice(0, 120);
     if (!name) throw new Error("A category name is required.");
     const row = {
       name,
@@ -522,7 +547,10 @@ export const adminSaveCategory = createServerFn({ method: "POST" })
     };
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     if (data.categoryId) {
-      const { error } = await supabaseAdmin.from("categories").update(row).eq("id", String(data.categoryId));
+      const { error } = await supabaseAdmin
+        .from("categories")
+        .update(row)
+        .eq("id", String(data.categoryId));
       if (error) throw new Error(error.message);
     } else {
       const { error } = await supabaseAdmin.from("categories").insert(row);

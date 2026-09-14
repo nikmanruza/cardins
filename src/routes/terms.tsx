@@ -3,14 +3,14 @@ import { createFileRoute } from "@tanstack/react-router";
 export const Route = createFileRoute("/terms")({
   head: () => ({
     meta: [
-      { title: "Terms of Service — NexusKeys" },
+      { title: "Terms of Service — CardinsPro" },
       {
         name: "description",
         content:
-          "The terms that apply when you buy digital gaming products from NexusKeys, including delivery and refund rules.",
+          "The terms that apply when you buy digital gaming products from CardinsPro, including delivery and refund rules.",
       },
-      { property: "og:title", content: "Terms of Service — NexusKeys" },
-      { property: "og:description", content: "Purchase, delivery and refund terms for NexusKeys." },
+      { property: "og:title", content: "Terms of Service — CardinsPro" },
+      { property: "og:description", content: "Purchase, delivery and refund terms for CardinsPro." },
     ],
   }),
   component: TermsPage,
@@ -18,7 +18,7 @@ export const Route = createFileRoute("/terms")({
 
 const SECTIONS = [
   {
-    title: "1. Buying from NexusKeys",
+    title: "1. Buying from CardinsPro",
     body: "By placing an order you confirm the details you provide are accurate and that you are permitted to buy the product in your country. Prices are shown in the currency listed on each product page.",
   },
   {

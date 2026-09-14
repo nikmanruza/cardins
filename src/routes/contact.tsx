@@ -14,12 +14,13 @@ import { submitContactMessage } from "@/lib/contact.functions";
 export const Route = createFileRoute("/contact")({
   head: () => ({
     meta: [
-      { title: "Contact NexusKeys Support" },
+      { title: "Contact CardinsPro Support" },
       {
         name: "description",
-        content: "Contact the NexusKeys team about an order, a code that will not redeem, or a refund.",
+        content:
+          "Contact the CardinsPro team about an order, a code that will not redeem, or a refund.",
       },
-      { property: "og:title", content: "Contact NexusKeys Support" },
+      { property: "og:title", content: "Contact CardinsPro Support" },
       { property: "og:description", content: "Reach our team about orders, codes and refunds." },
     ],
   }),

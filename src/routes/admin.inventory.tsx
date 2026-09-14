@@ -62,7 +62,8 @@ function AdminInventory() {
       <div className="h-fit rounded-lg border border-border bg-card p-5 shadow-card">
         <h2 className="font-display text-lg font-semibold">Add codes</h2>
         <p className="mt-1 text-sm text-muted-foreground">
-          One code per line. They are stored securely and released automatically when an order is paid.
+          One code per line. They are stored securely and released automatically when an order is
+          paid.
         </p>
 
         <div className="mt-4 space-y-2">
@@ -129,7 +130,9 @@ function AdminInventory() {
                   <td className="px-4 py-3">{item.productName}</td>
                   <td className="px-4 py-3 font-mono text-xs">{item.masked}</td>
                   <td className="px-4 py-3">
-                    <Badge className={TONE[item.status] ?? "bg-secondary text-secondary-foreground"}>
+                    <Badge
+                      className={TONE[item.status] ?? "bg-secondary text-secondary-foreground"}
+                    >
                       {item.status}
                     </Badge>
                   </td>
@@ -142,7 +145,9 @@ function AdminInventory() {
           </table>
         </div>
         {inventory.data?.length === 0 && (
-          <p className="mt-3 text-sm text-muted-foreground">No codes stored for this selection yet.</p>
+          <p className="mt-3 text-sm text-muted-foreground">
+            No codes stored for this selection yet.
+          </p>
         )}
       </div>
     </div>

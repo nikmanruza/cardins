@@ -17,10 +17,19 @@ export const submitContactMessage = createServerFn({ method: "POST" })
     (data: { name: string; email: string; orderReference?: string; message: string }) => data,
   )
   .handler(async ({ data }) => {
-    const name = String(data.name ?? "").trim().slice(0, 120);
-    const email = String(data.email ?? "").trim().slice(0, 200);
-    const message = String(data.message ?? "").trim().slice(0, 4000);
-    const orderReference = String(data.orderReference ?? "").trim().slice(0, 60) || null;
+    const name = String(data.name ?? "")
+      .trim()
+      .slice(0, 120);
+    const email = String(data.email ?? "")
+      .trim()
+      .slice(0, 200);
+    const message = String(data.message ?? "")
+      .trim()
+      .slice(0, 4000);
+    const orderReference =
+      String(data.orderReference ?? "")
+        .trim()
+        .slice(0, 60) || null;
 
     if (!name || !email.includes("@") || message.length < 5) {
       throw new Error("Please add your name, a valid email address and a short message.");
@@ -66,7 +75,8 @@ export const adminUpdateMessage = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     await assertAdmin(context);
     const patch: Record<string, unknown> = {};
-    if (data.status && ["new", "open", "closed"].includes(data.status)) patch["status"] = data.status;
+    if (data.status && ["new", "open", "closed"].includes(data.status))
+      patch["status"] = data.status;
     if (typeof data.adminNote === "string") patch["admin_note"] = data.adminNote.slice(0, 2000);
 
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");

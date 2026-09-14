@@ -49,9 +49,7 @@ function AdminMessagesPage() {
   return (
     <section>
       <h2 className="font-display text-lg font-semibold">Customer messages</h2>
-      <p className="mt-1 text-sm text-muted-foreground">
-        Messages sent through the contact page.
-      </p>
+      <p className="mt-1 text-sm text-muted-foreground">Messages sent through the contact page.</p>
 
       {rows.length === 0 ? (
         <div className="mt-6 rounded-lg border border-border bg-card p-8 text-center">
@@ -105,7 +103,9 @@ function MessageCard({
           )}
         </div>
         <div className="text-right">
-          <span className="rounded-full bg-secondary px-2.5 py-1 text-xs capitalize">{row.status}</span>
+          <span className="rounded-full bg-secondary px-2.5 py-1 text-xs capitalize">
+            {row.status}
+          </span>
           <p className="mt-1 text-xs text-muted-foreground">
             {new Date(row.created_at).toLocaleString()}
           </p>
