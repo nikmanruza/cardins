@@ -1,6 +1,6 @@
 import * as React from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { Loader2, Lock, Shield, Zap } from "lucide-react";
+import { Loader2, Lock, Shield } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -88,9 +88,7 @@ function AuthPage() {
             <h1 className="mt-4 font-display text-2xl font-semibold tracking-tight">
               Sign in to Admin
             </h1>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Store control access
-            </p>
+            <p className="mt-1 text-sm text-muted-foreground">Store control access</p>
           </div>
 
           <form onSubmit={submit} className="admin-auth-form space-y-4">

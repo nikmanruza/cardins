@@ -121,9 +121,7 @@ function AdminDashboard() {
             <div className="rounded-xl border border-border bg-background/50 p-4">
               <div className="flex items-center gap-2">
                 <KeyRound className="size-4 text-primary" aria-hidden />
-                <span className="text-xs uppercase tracking-wide text-muted-foreground">
-                  Codes
-                </span>
+                <span className="text-xs uppercase tracking-wide text-muted-foreground">Codes</span>
               </div>
               <p className="mt-3 font-display text-2xl font-semibold">
                 {stats.data?.availableKeys ?? "—"}
@@ -135,9 +133,7 @@ function AdminDashboard() {
           {stats.data && (
             <div className="mt-6 rounded-xl border border-dashed border-border p-4">
               <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">
-                  Fulfillment completion
-                </span>
+                <span className="text-sm text-muted-foreground">Fulfillment completion</span>
                 <span className="font-display text-sm font-semibold text-primary">
                   {completion}%
                 </span>
@@ -165,7 +161,11 @@ function AdminDashboard() {
             <BarChart3 className="size-5 text-primary" aria-hidden />
           </div>
           <div className="mt-8 space-y-3">
-            <QuickLink to="/admin/products" title="Update pricing" body="Price, sale price and stock." />
+            <QuickLink
+              to="/admin/products"
+              title="Update pricing"
+              body="Price, sale price and stock."
+            />
             <QuickLink to="/admin/orders" title="Review orders" body="Confirm, refund or cancel." />
             <QuickLink to="/admin/inventory" title="Add inventory" body="Load new digital keys." />
             <QuickLink to="/admin/catalog" title="Manage catalog" body="Create or edit products." />

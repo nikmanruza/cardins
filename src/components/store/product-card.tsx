@@ -93,7 +93,7 @@ export function ProductCard({ product }: { product: CatalogProduct }) {
         </div>
 
         <div className="mt-2 flex items-center justify-between gap-2">
-          <span className={cn("text-xs text-muted-foreground", soldOut && "text-destructive") }>
+          <span className={cn("text-xs text-muted-foreground", soldOut && "text-destructive")}>
             {STOCK_LABEL[product.stock_status]}
           </span>
           <Button

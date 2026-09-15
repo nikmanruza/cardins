@@ -65,7 +65,8 @@ function CartPage() {
                   {line.name}
                 </Link>
                 <p className="mt-1 text-sm text-muted-foreground">
-                  {formatPrice(convertPrice(line.unitPrice, line.currency, currency), currency)} each
+                  {formatPrice(convertPrice(line.unitPrice, line.currency, currency), currency)}{" "}
+                  each
                 </p>
                 <div className="mt-3 flex items-center gap-2">
                   <Button
@@ -96,7 +97,10 @@ function CartPage() {
                 </div>
               </div>
               <div className="text-right font-medium">
-                {formatPrice(convertPrice(line.unitPrice * line.quantity, line.currency, currency), currency)}
+                {formatPrice(
+                  convertPrice(line.unitPrice * line.quantity, line.currency, currency),
+                  currency,
+                )}
               </div>
             </li>
           ))}

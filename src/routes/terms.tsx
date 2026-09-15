@@ -10,7 +10,10 @@ export const Route = createFileRoute("/terms")({
           "The terms that apply when you buy digital gaming products from CardinsPro, including delivery and refund rules.",
       },
       { property: "og:title", content: "Terms of Service — CardinsPro" },
-      { property: "og:description", content: "Purchase, delivery and refund terms for CardinsPro." },
+      {
+        property: "og:description",
+        content: "Purchase, delivery and refund terms for CardinsPro.",
+      },
     ],
   }),
   component: TermsPage,

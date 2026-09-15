@@ -151,8 +151,7 @@ function RootComponent() {
 
     const AudioCtor =
       window.AudioContext ??
-      (window as typeof window & { webkitAudioContext?: typeof AudioContext })
-        .webkitAudioContext;
+      (window as typeof window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
     if (!AudioCtor) {
       window.localStorage.setItem(playedKey, "1");
       return undefined;

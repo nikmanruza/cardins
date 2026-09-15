@@ -88,7 +88,9 @@ export function SiteHeader() {
           <span className="grid size-8 place-items-center rounded-md bg-primary-soft text-primary">
             <Zap className="size-4" aria-hidden />
           </span>
-          <span className="font-display text-base font-semibold tracking-tight text-foreground">CardinsPro</span>
+          <span className="font-display text-base font-semibold tracking-tight text-foreground">
+            CardinsPro
+          </span>
         </Link>
 
         <nav className="hidden flex-1 items-center gap-1 md:flex">
@@ -135,14 +137,18 @@ export function SiteHeader() {
             )}
           </button>
 
-          <label className={cn(
-            "currency-select relative flex items-center gap-1 rounded-md border px-2 py-1 text-xs font-semibold shadow-sm",
-            isDark ? "currency-select-dark" : "currency-select-light",
-          )}>
+          <label
+            className={cn(
+              "currency-select relative flex items-center gap-1 rounded-md border px-2 py-1 text-xs font-semibold shadow-sm",
+              isDark ? "currency-select-dark" : "currency-select-light",
+            )}
+          >
             <span className="sr-only">Select currency</span>
             <select
               value={currency}
-              onChange={(event) => setCurrency(event.target.value as "USD" | "KSH" | "UGX" | "EUR" | "TZS")}
+              onChange={(event) =>
+                setCurrency(event.target.value as "USD" | "KSH" | "UGX" | "EUR" | "TZS")
+              }
               className="currency-control appearance-none bg-transparent pr-5 text-sm font-medium outline-none"
               aria-label="Currency"
             >

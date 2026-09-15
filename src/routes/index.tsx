@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/accordion";
 import { Input } from "@/components/ui/input";
 import { ProductCard } from "@/components/store/product-card";
-import { artFor, categoriesQuery, productsQuery } from "@/lib/catalog";
+import { categoriesQuery, productsQuery } from "@/lib/catalog";
 import heroImage from "@/assets/hero-marketplace.jpg";
 
 export const Route = createFileRoute("/")({
@@ -187,7 +187,13 @@ function HomePage() {
 
             <div className="hero-search mt-8">
               <span className="hero-search-icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" className="size-4" fill="none" stroke="currentColor" strokeWidth="2">
+                <svg
+                  viewBox="0 0 24 24"
+                  className="size-4"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
                   <path d="m21 21-4.2-4.2" />
                   <circle cx="11" cy="11" r="6" />
                 </svg>
@@ -199,7 +205,13 @@ function HomePage() {
               <Button asChild size="lg" className="hero-action-primary">
                 <Link to="/shop">
                   <span className="hero-action-icon" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" className="size-4" fill="none" stroke="currentColor" strokeWidth="2">
+                    <svg
+                      viewBox="0 0 24 24"
+                      className="size-4"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                    >
                       <path d="M4 7h7v7H4z" />
                       <path d="M13 7h7v7h-7z" />
                       <path d="M4 16h7v4H4z" />
@@ -212,7 +224,13 @@ function HomePage() {
               <Button asChild size="lg" variant="secondary" className="hero-action-secondary">
                 <Link to="/category/$slug" params={{ slug: "game-cards" }}>
                   <span className="hero-action-icon" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" className="size-4" fill="none" stroke="currentColor" strokeWidth="2">
+                    <svg
+                      viewBox="0 0 24 24"
+                      className="size-4"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                    >
                       <path d="M3 6h7l3 4h8a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H3z" />
                     </svg>
                   </span>
@@ -222,7 +240,13 @@ function HomePage() {
               <Button asChild size="lg" variant="secondary" className="hero-action-secondary">
                 <Link to="/shop">
                   <span className="hero-action-icon" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" className="size-4" fill="none" stroke="currentColor" strokeWidth="2">
+                    <svg
+                      viewBox="0 0 24 24"
+                      className="size-4"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                    >
                       <path d="M3 7h4l2-3 3 5 2-2h6a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H3z" />
                     </svg>
                   </span>
@@ -390,7 +414,6 @@ function HomePage() {
           </div>
         </div>
       </section>
-
     </div>
   );
 }

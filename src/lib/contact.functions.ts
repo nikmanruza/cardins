@@ -1,5 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import type { Database } from "@/integrations/supabase/types";
 
 export type ContactMessage = {
   id: string;
@@ -36,7 +38,7 @@ export const submitContactMessage = createServerFn({ method: "POST" })
     }
 
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { error } = await (supabaseAdmin as any).from("contact_messages").insert({
+    const { error } = await supabaseAdmin.from("contact_messages").insert({
       name,
       email,
       message,
@@ -46,7 +48,7 @@ export const submitContactMessage = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
-async function assertAdmin(context: { supabase: any; userId: string }) {
+async function assertAdmin(context: { supabase: SupabaseClient<Database>; userId: string }) {
   const { data, error } = await context.supabase.rpc("has_role", {
     _user_id: context.userId,
     _role: "admin",
@@ -60,7 +62,7 @@ export const adminListMessages = createServerFn({ method: "GET" })
   .handler(async ({ context }) => {
     await assertAdmin(context);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data, error } = await (supabaseAdmin as any)
+    const { data, error } = await supabaseAdmin
       .from("contact_messages")
       .select("id, name, email, order_reference, message, status, admin_note, created_at")
       .order("created_at", { ascending: false })
@@ -80,13 +82,13 @@ export const adminUpdateMessage = createServerFn({ method: "POST" })
     if (typeof data.adminNote === "string") patch["admin_note"] = data.adminNote.slice(0, 2000);
 
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { error } = await (supabaseAdmin as any)
+    const { error } = await supabaseAdmin
       .from("contact_messages")
       .update(patch)
       .eq("id", String(data.messageId));
     if (error) throw new Error(error.message);
 
-    await (supabaseAdmin as any).from("audit_logs").insert({
+    await supabaseAdmin.from("audit_logs").insert({
       actor_id: context.userId,
       action: "contact_message.updated",
       entity: "contact_messages",
